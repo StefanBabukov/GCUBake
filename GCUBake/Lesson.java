@@ -13,15 +13,18 @@ public class Lesson
     private int x;
     private String name;
     public int numberOfLessons;
-    
-    /**
-     * Constructor for objects of class Lesson
-     */
+    public Chef[] chefs;
+
     public Lesson(String name)
     {
         this.numberOfLessons = 15;
         this.name = name;
     }
+    
+    public void assignChef(Chef chef){
+        //this.chefs = add(chefs, chef);
+    }
+    
     public String getName(){
         return this.name;
     }

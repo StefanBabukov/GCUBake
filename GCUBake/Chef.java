@@ -8,15 +8,13 @@
 public class Chef
 {
     // instance variables - replace the example below with your own
-    public String[] classes;
     private String name;
-    public int[] lessonsDates;
+    public int[] availableDates;
     /**
      * Constructor for objects of class Chef
      */
     public Chef(String[] classes, String name)
     {
-        this.classes = classes;
         this.name = name;
     }
     
