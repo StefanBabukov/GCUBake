@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Chef
+comment0.text=\n\ Write\ a\ description\ of\ class\ Chef\ here.\n\n\ @author\ (your\ name)\n\ @version\ (a\ version\ number\ or\ a\ date)\n
+comment1.params=classes\ name
+comment1.target=Chef(java.lang.String[],\ java.lang.String)
+comment1.text=\n\ Constructor\ for\ objects\ of\ class\ Chef\n
+comment2.params=date\ lesson
+comment2.target=void\ assignClass(int,\ java.lang.String)
+comment3.params=args
+comment3.target=void\ main(java.lang.String[])
+numComments=4
