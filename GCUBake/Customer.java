@@ -26,18 +26,11 @@ public class Customer
         this.age = age;        
     }
 
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
-     */
+    
     public void bookLesson(String lessonName){
         if(this.lessonsAttended == 0){
             this.status = "Beginner";
         }
-        
-        // book a lesson
     }
     
     public void completeLesson(String lessonName){
@@ -51,16 +44,11 @@ public class Customer
         }
     }
     
-    public void finishLesson(String lessonName){
+    public void stopLesson(String lessonName){
         this.status = "Not-complete";
     }
     
-    public void joinLesson(String name){
-        if( name.equals("Cakes") || name.equals("Pies") || name.equals("Muffins")){
-            lesson.setName(name);
-        }
-        else{
-            System.out.println("No such lesson!");
-        }
+    public void joinLesson(Lesson lesson){
+        this.lesson = lesson;
     }
 }

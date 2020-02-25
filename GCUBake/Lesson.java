@@ -13,16 +13,19 @@ public class Lesson
     private int x;
     private String name;
     public int numberOfLessons;
-    public Chef[] chefs;
+    public Dictionary<String, String> schedule = new Hashtable<String, String>();
 
     public Lesson(String name)
     {
         this.numberOfLessons = 15;
         this.name = name;
     }
-    
-    public void assignChef(Chef chef){
-        //this.chefs = add(chefs, chef);
+
+    public Dictionary getSchedule(){
+
+        System.out.println(this.schedule.toString());
+        return this.schedule;
+        // System.out.println(this.schedule);
     }
     
     public String getName(){
