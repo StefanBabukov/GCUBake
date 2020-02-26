@@ -1,10 +1,3 @@
-
-/**
- * Write a description of class Chef here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 import java.util.*; 
 
 public class Chef
@@ -15,9 +8,7 @@ public class Chef
     public Lesson[] classes = new Lesson[5];
     public Dictionary<String, Object> assignedClasses = new Hashtable<String, Object>();
 
-    /**
-     * Constructor for objects of class Chef
-     */
+  
     public Chef(String name){
         this.name = name;
     }
@@ -34,7 +25,7 @@ public class Chef
             System.out.println("Class booked.");
         }
         else{
-            System.out.println("Chef not assigned to tutor this course!");
+            System.out.println("Chef not assigned to teach this course!");
         }
     }
     
@@ -66,7 +57,7 @@ public class Chef
         bob.bookClass(cakeLesson, "11.06");
         bob.teachLesson(muffinLesson);
         bob.bookClass(muffinLesson, "13.06");
-        //john.bookClass(cakeLesson,"12.06");
+       // john.bookClass(cakeLesson,"12.06");
         
         //cakeLesson.getSchedule();
         bob.checkTimetable();

@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - LoginPage",
+            "request": "launch",
+            "mainClass": "LoginPage",
+            "projectName": "GCUBake_2f60a9ad"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ButtonExample",
+            "request": "launch",
+            "mainClass": "ButtonExample",
+            "projectName": "GCUBake_2f60a9ad"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Chef<GCUBake_2f60a9ad>",
+            "request": "launch",
+            "mainClass": "Chef",
+            "projectName": "GCUBake_2f60a9ad"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Lesson<GCUBake_2f60a9ad>",
+            "request": "launch",
+            "mainClass": "Lesson",
+            "projectName": "GCUBake_2f60a9ad"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-gui<GCUBake_2f60a9ad>",
+            "request": "launch",
+            "mainClass": "gui",
+            "projectName": "GCUBake_2f60a9ad"
+        }
+    ]
+}
