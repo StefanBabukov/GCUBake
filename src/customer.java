@@ -5,7 +5,7 @@
  * @author (your name)
  * @version (a version number or a date)
  */
-public class Customer
+class Customer
 {
     private int x;
     private Lesson lesson;
@@ -29,17 +29,19 @@ public class Customer
         }
     }
     
-    public void completeLesson(String lessonName, String stop = false){
+    public void completeLesson(String lessonName, String stop){
         //Check if theres a booked lesson for today
         this.lessonsAttended++;
         if (stop){
             this.status = "Not-complete";
         }
-        if (this.lessonsAttended == this.lesson.numberOfLessons){
-            this.status = "Star-Baker";
-        }
-        else{
-            this.status = "On-going";
+        else {
+	        if (this.lessonsAttended == this.lesson.numberOfLessons){
+	            this.status = "Star-Baker";
+	        }
+	        else{
+	            this.status = "On-going";
+	        }
         }
 
     }

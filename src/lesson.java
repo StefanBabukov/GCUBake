@@ -1,6 +1,6 @@
 import java.util.*;  
 
-public class Lesson
+class Lesson
 {
     private String name;
     public int numberOfLessons;
@@ -12,7 +12,7 @@ public class Lesson
         this.name = name;
     }
 
-    public Dictionary getSchedule(){
+    public Dictionary<String, String> getSchedule(){
 
         System.out.println(this.schedule.toString());
         return this.schedule;

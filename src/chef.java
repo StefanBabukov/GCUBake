@@ -1,6 +1,6 @@
 import java.util.*; 
 
-public class Chef
+class Chef
 {
     // instance variables - replace the example below with your own
     private String name;
@@ -40,7 +40,7 @@ public class Chef
         }
     }
 
-    public Dictionary checkTimetable(){
+    public Dictionary<String, Object> checkTimetable(){
         //System.out.println(this.assignedClassses.toString());
         return this.assignedClasses;
     }
