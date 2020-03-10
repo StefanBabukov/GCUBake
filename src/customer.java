@@ -1,27 +1,18 @@
-
-/**
- * Write a description of class Customer here.
- *
- * @author (your name)
- * @version (a version number or a date)
- */
 class Customer
 {
-    private int x;
     private Lesson lesson;
-    private String name;
-    private int age;
+    private String username;
+    private String password;
     private String status; 
-    public int lessonsAttended;
+    private int lessonsAttended;
  
-    public Customer(String name, int age)
-    {
+    public Customer(String username, String password){
         this.lesson = new Lesson("None");
         this.lessonsAttended = 0;
-        this.name = name;
-        this.age = age;        
+        this.username = username;
+        this.password = password;
+        this.status = "Beginner";
     }
-
 
     public void bookLesson(String lessonName){
         if(this.lessonsAttended == 0){
@@ -29,7 +20,7 @@ class Customer
         }
     }
     
-    public void completeLesson(String lessonName, String stop){
+    public void completeLesson(String lessonName, boolean stop){
         //Check if theres a booked lesson for today
         this.lessonsAttended++;
         if (stop){
@@ -45,7 +36,12 @@ class Customer
         }
 
     }
-    
+    public void update_data(){
+    	SQLconnection connection = new SQLconnection();
+    	String[] fields = new String[] {"USERNAME", "PASSWORD", "STATUS"};
+    	String[] values = new String[] {"'"+this.username+"'", "'"+this.password+"'", "'"+this.status+"'"};
+    	connection.set_data("Customer", fields, values);
+    }
     public void joinLesson(Lesson lesson){
         this.lesson = lesson;
     }

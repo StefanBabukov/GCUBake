@@ -2,27 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
- 
-import java.sql.*;  
 
-class MysqlCon{  
-public static void main(String args[]){  
-try{  
-    Class.forName("com.mysql.jdbc.Driver");  
-    Connection con=DriverManager.getConnection(  
-    "jdbc:mysql://localhost:3306/GCUBake","foo","bar");  
-    //here sonoo is database name, root is username and password  
-    Statement stmt=con.createStatement();  
-    ResultSet rs=stmt.executeQuery("select * from emp");  
-    while(rs.next())  
-    System.out.println(rs.getInt(1)+"  "+rs.getString(2)+"  "+rs.getString(3));  
-    con.close();  
-}catch(Exception e){ System.out.println(e);}  
-}  
-}  
 class LoginFrame extends JFrame implements ActionListener {
  
-    Container container=getContentPane();
+   	Container container=getContentPane();
     JLabel userLabel=new JLabel("USERNAME");
     JLabel passwordLabel=new JLabel("PASSWORD");
     JTextField userTextField=new JTextField();
@@ -49,15 +32,17 @@ class LoginFrame extends JFrame implements ActionListener {
    public void setLocationAndSize()
    {
        //Setting location and Size of each components using setBounds() method.
-       
-	   userLabel.setBounds(50,150,100,30);
-       passwordLabel.setBounds(50,220,100,30);
-       userTextField.setBounds(150,150,150,30);
-       passwordField.setBounds(150,220,150,30);
-       showPassword.setBounds(150,250,150,30);
-       loginButton.setBounds(50,300,100,30);
-       registerButton.setBounds(200,300,100,30);
+	    userLabel.setBounds(50,150,100,30);
+        passwordLabel.setBounds(50,220,100,30);
+        userTextField.setBounds(150,150,150,30);
+        userTextField.addActionListener(this);
+        passwordField.addActionListener(this);
+        passwordField.setBounds(150,220,150,30);
+        showPassword.setBounds(150,250,150,30);
+        loginButton.setBounds(50,300,100,30);
+        registerButton.setBounds(200,300,100,30);
    		confirmBtn.setBounds(50,300,100,30);
+   		confirmBtn.addActionListener(this);
         registerButton.addActionListener(this);
         chefRadio.setBounds(50,100,75,50);
         studentRadio.setBounds(120,100,120,50);
@@ -89,15 +74,23 @@ class LoginFrame extends JFrame implements ActionListener {
     	if (studentRadio.isSelected()) {
     		chefRadio.setSelected(false);
     	}
-    	loginButton.setVisible(false);
-    	confirmBtn.setVisible(true);
-    	registerButton.setVisible(false);
-    	studentRadio.setVisible(true);
-    	chefRadio.setVisible(true);
+    	if (e.getSource() == registerButton) {
+        	loginButton.setVisible(false);
+        	confirmBtn.setVisible(true);
+        	registerButton.setVisible(false);
+        	studentRadio.setVisible(true);
+        	chefRadio.setVisible(true);
+    	}
+    	if(e.getSource() == confirmBtn) {
+    		String username = userTextField.getText();
+        	String password = String.valueOf(passwordField.getPassword());
+        	if (studentRadio.isSelected()) {
+        		Customer customer = new Customer(username, password);
+        		customer.update_data();
+        	}
+     	}
     }
-}
- 
-class Login {
+
     public static void main(String[] args){
         LoginFrame frame=new LoginFrame();
         frame.setTitle("Login Form");
@@ -106,4 +99,5 @@ class Login {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
  
-    }}
+    }
+ }
