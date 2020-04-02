@@ -1,19 +1,21 @@
 class Customer
 {
     private Lesson lesson;
-    private String username;
-    private String password;
+    public String username;
     private String status; 
     private int lessonsAttended;
- 
-    public Customer(String username, String password){
+    public int studentID;
+    
+    public Customer(String username, int studentID){
         this.lesson = new Lesson("None");
         this.lessonsAttended = 0;
         this.username = username;
-        this.password = password;
-        this.status = "Beginner";
+        this.status = " ";
+        this.studentID = studentID;
     }
-
+    public Customer() {
+    	
+    }
     public void bookLesson(String lessonName){
         if(this.lessonsAttended == 0){
             this.status = "Beginner";
@@ -36,11 +38,20 @@ class Customer
         }
 
     }
-    public void update_data(){
+    public void populateData(int ID) {
+    	String stringID;
+    	stringID = Integer.toString(ID);
     	SQLconnection connection = new SQLconnection();
-    	String[] fields = new String[] {"USERNAME", "PASSWORD", "STATUS"};
-    	String[] values = new String[] {"'"+this.username+"'", "'"+this.password+"'", "'"+this.status+"'"};
-    	connection.set_data("Customer", fields, values);
+    	this.username = connection.get_data("students", "username", "studentID", stringID, "String", "int").stringVar;
+    	this.status = connection.get_data("students", "status", "studentID", stringID, "String", "int").stringVar;
+    	
+    	//this.
+    }
+    public void createRow(){
+    	SQLconnection connection = new SQLconnection();
+    	String[] fields = new String[] {"username", "studentID", "lessons_attended", "status" };
+    	String[] values = new String[] {"'"+this.username+"'", "'"+this.studentID+"'","'"+this.lessonsAttended+"'","'"+this.status+"'"};
+    	connection.set_data("students", fields, values);
     }
     public void joinLesson(Lesson lesson){
         this.lesson = lesson;

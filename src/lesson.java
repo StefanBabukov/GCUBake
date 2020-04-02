@@ -1,24 +1,18 @@
 import java.util.*;  
 
-class Lesson
-{
+class Lesson{
     private String name;
     public int numberOfLessons;
-    public Dictionary<String, String> schedule = new Hashtable<String, String>();
-
+    public String available_chefs = new String();
     public Lesson(String name)
     {
         this.numberOfLessons = 15;
         this.name = name;
     }
-
-    public Dictionary<String, String> getSchedule(){
-
-        System.out.println(this.schedule.toString());
-        return this.schedule;
-        // System.out.println(this.schedule);
+    public Lesson() {
+    	
     }
-    
+  
     public String getName(){
         return this.name;
     }
