@@ -121,9 +121,47 @@ public void set_data(String table, String[] fields, String[] values) {
 	        System.err.println(e.getMessage());
 	      }	   
 }
-   
+   public void update_data(String table, String column, int value, String id_name, int id_value) {
+	   Connection conn = null;
+
+	   try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
+		      String query;
+		      query = "update " + table + " set " + column + " = " + value + " where " + id_name + " = " + id_value ;
+		      System.out.println(query);
+		      PreparedStatement preparedStmt = conn.prepareStatement(query);
+		      preparedStmt.execute();
+		      conn.close();
+		   }
+	   catch (Exception e)
+	      {
+	        System.err.println("Got an exception!");
+	        System.err.println(e.getMessage());
+	      }	
+   }
+   public void modify_data(String query) {
+	   Connection conn = null;
+
+	   try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
+		      System.out.println(query);
+		      PreparedStatement preparedStmt = conn.prepareStatement(query);
+		      preparedStmt.execute();
+		      conn.close();
+		   }
+	   catch (Exception e)
+	      {
+	        System.err.println("Got an exception!");
+	        System.err.println(e.getMessage());
+	      }	
+   }
+   //delete from users where id = 10;
    public static void main (String[] args) {
 	   System.out.println("HI");
    }
+   
    }
+//update lesson set number_lessons = 5 where name = "PIE";
 //end FirstExample

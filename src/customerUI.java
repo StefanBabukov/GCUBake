@@ -1,4 +1,5 @@
 
+import java.util.*; 
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -24,9 +25,14 @@ import javax.swing.*;
      DefaultListModel<String> l1 = new DefaultListModel<>();  
 	JButton Refresh = new JButton("Refresh");
 	JButton signupORcancel = new JButton("Sign for a course");
-
+	JList <String> ChoiseSelection = new JList <>(l1);
+	ArrayList<String> chefNames = new ArrayList<String>();
 	private JPanel contentPane;
-
+	SQLconnection connection = new SQLconnection();
+	JLabel SelectedCourse = new JLabel();
+	JLabel lblNewLabel = new JLabel();
+	JLabel StudentStatus = new JLabel();
+	JLabel lblNewLabel_1 = new JLabel();
 	/**
 	 * Launch the application.
 	 */
@@ -46,11 +52,19 @@ import javax.swing.*;
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
+		SelectedCourse.setBounds(18, 59, 185, 16);
+		contentPane.add(SelectedCourse);
+		
+		lblNewLabel.setBounds(18, 83, 273, 16);
+		contentPane.add(lblNewLabel);
+		
+		Refresh.setBounds(247, 129, 117, 29);
+		contentPane.add(Refresh);
+		
 		JLabel username = new JLabel("Hello "+ student.username);
 		username.setBounds(192, 19, 172, 16);
 		contentPane.add(username);
 		
-		JLabel StudentStatus = new JLabel("Status - "+ student.status);
 		StudentStatus.setBounds(18, 42, 140, 16);
 		contentPane.add(StudentStatus);
 		
@@ -58,70 +72,89 @@ import javax.swing.*;
 		signupORcancel.setBounds(159, 389, 132, 45);
 		contentPane.add(signupORcancel);
 
-		JList <String> ChoiseSelection = new JList <>(l1);
 		ChoiseSelection.setEnabled(true);
 		ChoiseSelection.setBounds(141, 162, 253, 201);
 		contentPane.add(ChoiseSelection);
-		this.refreshLessons();
 		
-		JLabel SelectedCourse = new JLabel("Current course - "+ student.currentCourse.getName());
-		SelectedCourse.setBounds(18, 59, 185, 16);
-		contentPane.add(SelectedCourse);
-		
-		JLabel lblNewLabel = new JLabel("Lessons attended - " + student.lessonsAttended);
-		lblNewLabel.setBounds(18, 83, 273, 16);
-		contentPane.add(lblNewLabel);
-		
-		JButton PreviousBtn = new JButton("Previous courses");
-		PreviousBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
-		PreviousBtn.setBounds(385, 389, 117, 45);
-		contentPane.add(PreviousBtn);
-		
-		Refresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				//get the courses and populate table
-			}
-		});
-		Refresh.setBounds(247, 129, 117, 29);
-		contentPane.add(Refresh);
-		
-		JLabel lblNewLabel_1 = new JLabel("Available courses");
 		lblNewLabel_1.setBounds(119, 134, 162, 16);
 		contentPane.add(lblNewLabel_1);
 		
+
+		JButton PreviousBtn = new JButton("Previous courses");
+		PreviousBtn.setBounds(385, 389, 117, 45);
+		contentPane.add(PreviousBtn);
+		
+		
+		Refresh.addActionListener(this);
+		PreviousBtn.addActionListener(this);
 		signupORcancel.addActionListener(this);
+		refreshInfo();
 	}
+	
+	public void refreshInfo() {
+		StudentStatus.setText("Status - "+ this.student.status);
+
+		if(this.student.courseID!=0) {
+			SelectedCourse.setText("Current course - "+ connection.get_data("lesson", "name", "lessonID", Integer.toString(this.student.courseID), "String", "int").stringVar);
+			lblNewLabel.setText("Lessons attended - " + this.student.lessonsAttended);
+			ChoiseSelection.setVisible(false);
+			signupORcancel.setText("Cancel course");
+			lblNewLabel_1.setVisible(false);
+		}
+		else {
+			this.refreshLessons();
+			lblNewLabel.setText("Not assigned to a course");
+			lblNewLabel_1.setText("Available courses");
+
+		}
+		
+	}
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		 if (e.getSource() == this.Refresh) {
-			 this.refreshLessons();
+			 this.refreshInfo();
 		 }
 		 if (e.getSource()==this.signupORcancel) {
-			 if (sign) {
-				 String a = new String();
-				a = l1.getSelectedValue().toString();
+			 if (this.student.courseID == 0) {
+				//getting the selected course and signing for it
+				String chefName = chefNames.get(ChoiseSelection.getSelectedIndex());
+				int chefID = connection.get_data("chefs", "chefID", "username", chefName, "int", "String").integerVar;
+				int courseID = connection.get_data("chefs", "courseID", "chefID", Integer.toString(chefID), "int", "int").integerVar;
+				
+				connection.update_data("students", "courseID", courseID, "studentID", this.student.studentID);
+				connection.update_data("students", "chefID", chefID, "studentID", this.student.studentID);
+				connection.update_data("chefs", "studentID", this.student.studentID, "chefID", chefID);
+				this.student.populateData(this.student.studentID);
+				connection.modify_data("delete from available_chefs where name = '"+ chefName + "'");
+				
+				refreshInfo();
+			}
+			if(this.student.courseID!=0) {
+				//cancel the course, update the chef that student cancelled
 			}
 		 }
 	}
 	public void refreshLessons() {
 		int i = 1;
+		l1.clear();
+		chefNames.clear();
 		while (true) {
 			
-			//2.addElement("Turbo C++");  
-			SQLconnection connection = new SQLconnection();
 			
-			String name = connection.get_data("lesson", "name", "lessonID", Integer.toString(i), "String", "int").stringVar;
-			int lessons = connection.get_data("lesson", "NUMBER_LESSONS", "lessonID", Integer.toString(i), "int", "int").integerVar;
-			if (name == null) {
+			String chefName = connection.get_data("available_chefs", "name", "ID", Integer.toString(i), "String", "int").stringVar;
+			int lesson_id = connection.get_data("available_chefs", "lessonID", "ID", Integer.toString(i), "int", "int").integerVar;
+			
+			int lessons = connection.get_data("lesson", "NUMBER_LESSONS", "lessonID", Integer.toString(lesson_id), "int", "int").integerVar;
+			String lessonName = connection.get_data("lesson", "NAME", "lessonID", Integer.toString(lesson_id), "String", "int").stringVar;
+			if (chefName == null) {
 				break;
 			}
-			 l1.addElement(name + " - number of lessons is "+ lessons);  
+			 l1.addElement(lessonName + ", chef - "+ chefName + ", lessons - " + lessons);  
+			 chefNames.add(chefName);
 			 i++;
 		}
+		System.out.println(chefNames);
 	}
 	}
 

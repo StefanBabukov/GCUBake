@@ -9,7 +9,7 @@ class Chef
     public int chefID; 
     public Lesson currentCourse;
     public int courseID;
-    
+    public int studentID;
     public Chef(String name, int chefID){
         this.username = name;
         this.chefID = chefID;
@@ -52,20 +52,22 @@ class Chef
     */
     public void createRow(){
     	SQLconnection connection = new SQLconnection();
-    	String[] fields = new String[] {"username", "chefID", "current_course", "student" };
-    	String[] values = new String[] {"'"+this.username+"'", "'"+this.chefID+"'","'"+" "+"'","'"+" "+"'"};
+    	String[] fields = new String[] {"username", "chefID"};
+    	String[] values = new String[] {"'"+this.username+"'", "'"+this.chefID+"'"};
     	connection.set_data("chefs", fields, values);
     }
     public void populateData(int ID) {
     	//data about the account is fetched from the database and populated into the fields of this object
     	String stringID;
+    	this.chefID = ID;
     	stringID = Integer.toString(ID);
     	SQLconnection connection = new SQLconnection();
     	this.username = connection.get_data("chefs", "username", "chefID", stringID, "String", "int").stringVar;
     	this.courseID = connection.get_data("chefs", "courseID", "chefID", stringID, "int", "int").integerVar;
-    	
-    	Lesson chefLesson = new Lesson();
-    	currentCourse = chefLesson.getLessonFromSQL(this.courseID);
+    	this.studentID = connection.get_data("chefs", "studentID", "chefID", stringID, "int", "int").integerVar;
+
+    	//Lesson chefLesson = new Lesson();
+    	//currentCourse = chefLesson.getLessonFromSQL(this.courseID);
     }
     public static void main(String args[]){
         /*System.out.println("hello");

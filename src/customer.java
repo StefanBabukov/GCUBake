@@ -4,7 +4,7 @@ class Customer
     public String status; 
     public int lessonsAttended;
     public int studentID;
-    
+    public int chefID;
     public int courseID;
     
     public Lesson currentCourse;
@@ -44,14 +44,16 @@ class Customer
     	//data about the account is fetched from the database and populated into the fields of this object
 
     	String stringID;
+    	this.studentID = ID;
     	stringID = Integer.toString(ID);
     	SQLconnection connection = new SQLconnection();
     	this.username = connection.get_data("students", "username", "studentID", stringID, "String", "int").stringVar;
     	this.status = connection.get_data("students", "status", "studentID", stringID, "String", "int").stringVar;
     	this.courseID = connection.get_data("students", "courseID", "studentID", stringID, "int", "int").integerVar;
-    	
-    	Lesson studentLesson = new Lesson();
-    	currentCourse = studentLesson.getLessonFromSQL(this.courseID);
+    	this.chefID = connection.get_data("students", "chefID", "studentID", stringID, "int", "int").integerVar;
+
+    	//Lesson studentLesson = new Lesson();
+    	//currentCourse = studentLesson.getLessonFromSQL(this.courseID);
     	//this.
     }
     public void createRow(){

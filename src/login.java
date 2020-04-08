@@ -77,6 +77,7 @@ class LoginFrame extends JFrame implements ActionListener {
  
     @Override
     public void actionPerformed(ActionEvent e) {
+    	System.out.print(e.getSource());
     	String role = null;
     	if (chefRadio.isSelected()) {
     		role = "Chef";

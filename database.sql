@@ -10,7 +10,7 @@ CREATE TABLE students (
         studentID INT NOT NULL,
         username VARCHAR(30) NOT NULL,
 	status VARCHAR(30) NOT NULL,
-	current_course VARCHAR(30),
+	chefID INT,
 	lessons_attended INT NOT NULL,
         PRIMARY KEY (studentID)
     );
@@ -26,7 +26,7 @@ FOREIGN KEY(studentID) REFERENCES students(studentID)
 CREATE TABLE chefs (
         chefID INT NOT NULL,
         username VARCHAR(30) NOT NULL,
-	student VARCHAR(30) NOT NULL,
+	studentID INT,
 	current_course VARCHAR(30) NOT NULL,
         PRIMARY KEY (chefID)
     );
