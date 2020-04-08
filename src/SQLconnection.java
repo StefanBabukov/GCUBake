@@ -59,7 +59,6 @@ public class SQLconnection {
 	    	  if (var_type.equals("int")) {
 	    		  int_table_value = rs.getInt(get_field);
 	    	  }
-	        // INSERT INTO `lesson`(NAME) VALUES ("HI");
 	      } 
 	      
 	      //STEP 6: Clean-up environment
@@ -68,13 +67,10 @@ public class SQLconnection {
 	      conn.close();
 	
 	   }catch(SQLException se){
-	      //Handle errors for JDBC
 	      se.printStackTrace();
 	   }catch(Exception e){
-	      //Handle errors for Class.forName
 	      e.printStackTrace();
 	   }finally{
-	      //finally block used to close resources
 	      try{
 	         if(stmt!=null)
 	            stmt.close();

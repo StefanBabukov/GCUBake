@@ -7,7 +7,8 @@ class Chef
 
     public Customer student;
     public int chefID; 
-    public Lesson current_course;
+    public Lesson currentCourse;
+    public int courseID;
     
     public Chef(String name, int chefID){
         this.username = name;
@@ -56,11 +57,15 @@ class Chef
     	connection.set_data("chefs", fields, values);
     }
     public void populateData(int ID) {
+    	//data about the account is fetched from the database and populated into the fields of this object
     	String stringID;
     	stringID = Integer.toString(ID);
     	SQLconnection connection = new SQLconnection();
     	this.username = connection.get_data("chefs", "username", "chefID", stringID, "String", "int").stringVar;
+    	this.courseID = connection.get_data("chefs", "courseID", "chefID", stringID, "int", "int").integerVar;
     	
+    	Lesson chefLesson = new Lesson();
+    	currentCourse = chefLesson.getLessonFromSQL(this.courseID);
     }
     public static void main(String args[]){
         /*System.out.println("hello");

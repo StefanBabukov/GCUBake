@@ -16,9 +16,15 @@ import java.awt.event.ActionEvent;
 import javax.swing.JInternalFrame;
 import javax.swing.JTable;
 import javax.swing.JList;
+import javax.swing.*;  
 
- public class customerUI extends JFrame {
+ public class customerUI extends JFrame implements ActionListener {
 	 Customer student;
+	 boolean sign = true;
+     DefaultListModel<String> l1 = new DefaultListModel<>();  
+	JButton Refresh = new JButton("Refresh");
+	JButton signupORcancel = new JButton("Sign for a course");
+
 	private JPanel contentPane;
 
 	/**
@@ -44,29 +50,25 @@ import javax.swing.JList;
 		username.setBounds(192, 19, 172, 16);
 		contentPane.add(username);
 		
-		JLabel StudentStatus = new JLabel("Status - ");
+		JLabel StudentStatus = new JLabel("Status - "+ student.status);
 		StudentStatus.setBounds(18, 42, 140, 16);
 		contentPane.add(StudentStatus);
 		
-		JButton signupORcancel = new JButton("Sign for a course");
-		signupORcancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-			}
-		});
+		
 		signupORcancel.setBounds(159, 389, 132, 45);
 		contentPane.add(signupORcancel);
-		
-		JList ChoiseSelection = new JList();
-		ChoiseSelection.setEnabled(false);
+
+		JList <String> ChoiseSelection = new JList <>(l1);
+		ChoiseSelection.setEnabled(true);
 		ChoiseSelection.setBounds(141, 162, 253, 201);
 		contentPane.add(ChoiseSelection);
+		this.refreshLessons();
 		
-		JLabel SelectedCourse = new JLabel("Current course -");
+		JLabel SelectedCourse = new JLabel("Current course - "+ student.currentCourse.getName());
 		SelectedCourse.setBounds(18, 59, 185, 16);
 		contentPane.add(SelectedCourse);
 		
-		JLabel lblNewLabel = new JLabel("Lessons attended -");
+		JLabel lblNewLabel = new JLabel("Lessons attended - " + student.lessonsAttended);
 		lblNewLabel.setBounds(18, 83, 273, 16);
 		contentPane.add(lblNewLabel);
 		
@@ -79,7 +81,6 @@ import javax.swing.JList;
 		PreviousBtn.setBounds(385, 389, 117, 45);
 		contentPane.add(PreviousBtn);
 		
-		JButton Refresh = new JButton("Refresh");
 		Refresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//get the courses and populate table
@@ -91,5 +92,36 @@ import javax.swing.JList;
 		JLabel lblNewLabel_1 = new JLabel("Available courses");
 		lblNewLabel_1.setBounds(119, 134, 162, 16);
 		contentPane.add(lblNewLabel_1);
+		
+		signupORcancel.addActionListener(this);
 	}
-}
+	public void actionPerformed(ActionEvent e) {
+		
+		 if (e.getSource() == this.Refresh) {
+			 this.refreshLessons();
+		 }
+		 if (e.getSource()==this.signupORcancel) {
+			 if (sign) {
+				 String a = new String();
+				a = l1.getSelectedValue().toString();
+			}
+		 }
+	}
+	public void refreshLessons() {
+		int i = 1;
+		while (true) {
+			
+			//2.addElement("Turbo C++");  
+			SQLconnection connection = new SQLconnection();
+			
+			String name = connection.get_data("lesson", "name", "lessonID", Integer.toString(i), "String", "int").stringVar;
+			int lessons = connection.get_data("lesson", "NUMBER_LESSONS", "lessonID", Integer.toString(i), "int", "int").integerVar;
+			if (name == null) {
+				break;
+			}
+			 l1.addElement(name + " - number of lessons is "+ lessons);  
+			 i++;
+		}
+	}
+	}
+
