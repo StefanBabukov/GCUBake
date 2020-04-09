@@ -5,8 +5,7 @@ import java.awt.event.ActionListener;
 
 class LoginFrame extends JFrame implements ActionListener {
  
-   	 JPanel container = new JPanel();
-
+   	JPanel container = new JPanel();
     JLabel userLabel=new JLabel("USERNAME");
     JLabel passwordLabel=new JLabel("PASSWORD");
     JTextField userTextField=new JTextField();
@@ -19,7 +18,8 @@ class LoginFrame extends JFrame implements ActionListener {
     JRadioButton studentRadio=new JRadioButton("Student");   
     JLabel welcome=new JLabel("Please login or register");
 	SQLconnection connection = new SQLconnection();
-
+	JButton back = new JButton("Back");
+	
     LoginFrame()
     {
        //Calling methods inside constructor.
@@ -52,14 +52,18 @@ class LoginFrame extends JFrame implements ActionListener {
         registerButton.addActionListener(this);
         chefRadio.setBounds(50,100,75,50);
         studentRadio.setBounds(120,100,120,50);
+        back.setBounds(200,300,100,30);
+        back.addActionListener(this);
         studentRadio.setVisible(false);
         chefRadio.setVisible(false);
         chefRadio.addActionListener(this);
+        back.setVisible(false);
         studentRadio.addActionListener(this);
         ButtonGroup bg=new ButtonGroup();    
         bg.add(chefRadio);bg.add(studentRadio); 
-        welcome.setBounds(50, 100, 220, 30);
+        welcome.setBounds(50, 70, 220, 30);
         System.out.println(connection.get_table());
+        showPassword.addActionListener(this);
    }
    public void addComponentsToContainer()
    {
@@ -75,12 +79,19 @@ class LoginFrame extends JFrame implements ActionListener {
        container.add(chefRadio);
        container.add(studentRadio);
        container.add(welcome);
+       container.add(back);
    }
  
     @Override
     public void actionPerformed(ActionEvent e) {
     	System.out.print(e.getSource());
     	String role = null;
+    	if (showPassword.isSelected()) {
+    		passwordField.setEchoChar((char)0);
+    	}
+    	else {
+    		passwordField.setEchoChar('*');
+    	}
     	if (chefRadio.isSelected()) {
     		role = "Chef";
     	}
@@ -93,33 +104,56 @@ class LoginFrame extends JFrame implements ActionListener {
         	registerButton.setVisible(false);
         	studentRadio.setVisible(true);
         	chefRadio.setVisible(true);
-        	welcome.setVisible(false);
+        	welcome.setVisible(true);
+        	back.setVisible(true);
+        	welcome.setForeground(Color.BLACK);
+        	welcome.setText("Choose a username and password");
+    	}
+    	if(e.getSource()==back) {
+        	back.setVisible(false);
+          	loginButton.setVisible(true);
+        	confirmBtn.setVisible(false);
+        	registerButton.setVisible(true);
+        	studentRadio.setVisible(false);
+        	chefRadio.setVisible(false);
+        	welcome.setVisible(true);
+        	welcome.setForeground(Color.BLACK);
+        	welcome.setText("Please login or register");
     	}
     	if(e.getSource() == confirmBtn) {
     		String username = userTextField.getText();
         	String password = String.valueOf(passwordField.getPassword());
-        	String[] fields = new String[] {"username", "password", "role"};
-        	
-            String[] values = new String[] {"'"+username+"'", "'"+password+"'", "'"+role+"'"};
-            connection.set_data("users", fields, values);
-       
-            returnObject id = connection.get_data("users", "id", "username", username, "int", "String");
-            
-            if (role.equals("Chef")) {
-            	Chef newChef = new Chef(username, id.integerVar);
-            	newChef.createRow();
-            	chefUI frame = new chefUI(newChef);
-				frame.setVisible(true);
-            	//container.dispatchEvent(new WindowEvent(container, WindowEvent.WINDOW_CLOSING));
-            	
-            }
-            
-            if(role.equals("Student")) {
-            	Customer newStudent = new Customer(username, id.integerVar);
-            	newStudent.createRow();
-            	customerUI frame = new customerUI(newStudent);
-				frame.setVisible(true);
-            }
+
+        	String checkUsernameExistance = connection.get_data("users", "username", "username", username, "String", "String").stringVar;
+        	if(checkUsernameExistance != null) {
+        		//username exists, registration is cancelled
+        		welcome.setForeground(Color.RED);
+        		welcome.setText("Username already in use!");
+        		userTextField.setText("");
+        		passwordField.setText("");
+        	}
+        	else {
+	        	String[] fields = new String[] {"username", "password", "role"};
+	        	
+	            String[] values = new String[] {"'"+username+"'", "'"+password+"'", "'"+role+"'"};
+	            connection.set_data("users", fields, values);
+	       
+	            returnObject id = connection.get_data("users", "id", "username", username, "int", "String");
+	            
+	            if (role.equals("Chef")) {
+	            	Chef newChef = new Chef(username, id.integerVar);
+	            	newChef.createRow();
+	            	chefUI frame = new chefUI(newChef);
+					frame.setVisible(true);
+	            }
+	            
+	            if(role.equals("Student")) {
+	            	Customer newStudent = new Customer(username, id.integerVar);
+	            	newStudent.createRow();
+	            	customerUI frame = new customerUI(newStudent);
+					frame.setVisible(true);
+	            }
+        	}
             
         }
      	
@@ -128,31 +162,44 @@ class LoginFrame extends JFrame implements ActionListener {
     		String username = userTextField.getText();
     		String password = String.valueOf(passwordField.getPassword());
     		returnObject password_check;
-        	password_check = connection.get_data("users", "password", "username", username, "String", "String");
-
-        	if (password_check.stringVar.equals(password)) {
-        		System.out.println("Success");
-        		welcome.setText("Welcome " + username);
-        		//launch next part of the GUI
-        		
-        		role = connection.get_data("users", "role", "username", username, "String", "String").stringVar;
-        		int id = connection.get_data("users", "id", "username", username, "int", "String").integerVar;
-        		
-        		if(role.equals("Student")) {
-        			Customer getCustomer = new Customer();
-        			getCustomer.populateData(id);
-        			customerUI frame = new customerUI(getCustomer);
-    				frame.setVisible(true);
-        		}
-        		if(role.equals("Chef")) {
-        			Chef getChef = new Chef();
-        			getChef.populateData(id);
-        			chefUI frame = new chefUI(getChef);
-    				frame.setVisible(true);
-        		}
+        	String checkUsernameExistance = connection.get_data("users", "username", "username", username, "String", "String").stringVar;
+        	//checking if account username exists
+        	if (checkUsernameExistance == null) {
+        		welcome.setForeground(Color.RED);
+        		welcome.setText("Wrong password or username!");
         	}
         	else {
-        		System.out.println("Wrong password or username");
+        		//checking if the username and password match
+        		password_check = connection.get_data("users", "password", "username", username, "String", "String");
+	        	if (password_check.stringVar.equals(password)) {
+	        		//logging in
+	        		System.out.println("Success");
+	        		
+	        		welcome.setForeground(Color.BLACK);
+	        		welcome.setText("Welcome " + username);
+	        		//launch next part of the GUI
+	        		
+	        		role = connection.get_data("users", "role", "username", username, "String", "String").stringVar;
+	        		int id = connection.get_data("users", "id", "username", username, "int", "String").integerVar;
+	        		//determining the role - chef/student of the account and launching the appropriate gui
+	        		if(role.equals("Student")) {
+	        			Customer getCustomer = new Customer();
+	        			getCustomer.populateData(id);
+	        			customerUI frame = new customerUI(getCustomer);
+	    				frame.setVisible(true);
+	        		}
+	        		if(role.equals("Chef")) {
+	        			Chef getChef = new Chef();
+	        			getChef.populateData(id);
+	        			chefUI frame = new chefUI(getChef);
+	    				frame.setVisible(true);
+	        		}
+	        	}
+	        	else {
+	        		welcome.setForeground(Color.RED);
+	        		welcome.setText("Wrong password or username!");
+	        		System.out.println("Wrong password or username");
+	        	}
         	}
     	}
     }

@@ -1,6 +1,6 @@
 
 
-import java.awt.BorderLayout;
+//import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -18,18 +18,22 @@ import java.awt.event.ActionEvent;
 import javax.swing.JInternalFrame;
 import javax.swing.JTable;
 import javax.swing.JList;
+import java.awt.Color;
 
  public class chefUI extends JFrame implements ActionListener{
 	 public Chef chef;
 	private JPanel contentPane;
     DefaultListModel<String> l1 = new DefaultListModel<>();  
-	JButton signupORpass = new JButton("Teach course");
+	JButton teachBtn = new JButton("Teach course");
 	SQLconnection connection = new SQLconnection();
 	JLabel teachingLabel = new JLabel();
 	JList <String> ChoiseSelection = new JList <>(l1);
 	JButton cancelBtn = new JButton("cancel course");
 	JButton refresh = new JButton("Refresh");
 	JLabel SelectedCourse = new JLabel();
+	JButton Pass = new JButton("Pass");
+	private final JLabel message = new JLabel();
+
 	public boolean sign;
 
 	public chefUI(Chef chef) {
@@ -40,7 +44,7 @@ import javax.swing.JList;
 		setBounds(100, 100, 508, 462);
 		cancelBtn.setBounds(236, 257, 117, 29);
 		username.setBounds(192, 19, 166, 16);
-		signupORpass.setBounds(169, 376, 117, 29);
+		teachBtn.setBounds(169, 376, 117, 29);
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -49,7 +53,7 @@ import javax.swing.JList;
 		
 		contentPane.add(username);
 			
-		contentPane.add(signupORpass);
+		contentPane.add(teachBtn);
 		
 		ChoiseSelection.setEnabled(true);
 		ChoiseSelection.setBounds(105, 160, 253, 201);
@@ -61,15 +65,6 @@ import javax.swing.JList;
 		teachingLabel.setBounds(159, 192, 162, 16);
 		contentPane.add(teachingLabel);
 
-		//JLabel lblNewLabel = new JLabel("Lessons attended -");
-		//lblNewLabel.setBounds(18, 83, 273, 16);
-		//contentPane.add(lblNewLabel);
-	
-		JLabel TeachingStudent = new JLabel("");
-		TeachingStudent.setBounds(159, 229, 61, 16);
-		contentPane.add(TeachingStudent);
-		
-		JButton Pass = new JButton("Pass");
 		Pass.setBounds(145, 257, 75, 29);
 		contentPane.add(Pass);
 		
@@ -77,10 +72,15 @@ import javax.swing.JList;
 		
 		refresh.setBounds(370, 14, 117, 29);
 		contentPane.add(refresh);
+		message.setForeground(Color.RED);
+		message.setBounds(18, 87, 303, 16);
+		
+		contentPane.add(message);
 		
 		refresh.addActionListener(this);
-		signupORpass.addActionListener(this);
+		teachBtn.addActionListener(this);
 		cancelBtn.addActionListener(this);
+		Pass.addActionListener(this);
 		this.refreshInfo();
 
 	}
@@ -95,21 +95,18 @@ import javax.swing.JList;
 			if(this.chef.studentID != 0) {
 				teachingLabel.setText("You are teaching - " + connection.get_data("students", "username", "studentID", Integer.toString(this.chef.studentID), "String", "int").stringVar);
 				SelectedCourse.setText("Current course - " + connection.get_data("lesson", "name", "lessonID", Integer.toString(this.chef.courseID), "String", "int").stringVar);
-
+				teachBtn.setVisible(false);
 				}
 				else {
 					teachingLabel.setText("Searching for a student...");
 				}
 		}
+		message.setText(connection.get_data("chefs", "message", "chefid", Integer.toString(this.chef.chefID), "String", "int").stringVar);
 	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		 System.out.println("in event handler1");
 
-		// if (e.getSource() == this.Refresh) {
-		//	 this.refreshLessons();
-		 //}
-		 System.out.print(e.getSource());
 		 if (e.getSource() == refresh) {
 			 this.refreshInfo();
 		 }
@@ -117,24 +114,23 @@ import javax.swing.JList;
 			 this.chef.cancelCourse();
 			 this.refreshInfo();
 		 }
-		 if (e.getSource() == this.signupORpass) {
-			 System.out.println("in event handler");
-			 if (this.chef.courseID == 0) {
-				String courseName = ChoiseSelection.getSelectedValue();
-				this.chef.signLesson(courseName);
-				ChoiseSelection.setVisible(false);
-				this.refreshInfo();
-			 }
+		 if (e.getSource() == this.teachBtn) {
+			System.out.println("in event handler");
+			String courseName = ChoiseSelection.getSelectedValue();
+			this.chef.signLesson(courseName);
+			ChoiseSelection.setVisible(false);
+			this.refreshInfo();
+		 }
+		 if(e.getSource() == Pass) {
+			 this.chef.passStudent();
+			 this.refreshInfo();
 		 }
 	}
 	public void refreshLessons() {
 		int i = 1;
 		l1.clear();
 		while (true) {
-			
-			//2.addElement("Turbo C++");  
-			SQLconnection connection = new SQLconnection();
-			
+						
 			String name = connection.get_data("lesson", "name", "lessonID", Integer.toString(i), "String", "int").stringVar;
 			if (name == null) {
 				break;
@@ -143,7 +139,5 @@ import javax.swing.JList;
 			 i++;
 		}
 	}
-	public static void main(String[] args) {
-		
-	}
+
 }

@@ -30,9 +30,11 @@ import javax.swing.*;
 	private JPanel contentPane;
 	SQLconnection connection = new SQLconnection();
 	JLabel SelectedCourse = new JLabel();
-	JLabel lblNewLabel = new JLabel();
+	JLabel message = new JLabel();
 	JLabel StudentStatus = new JLabel();
 	JLabel lblNewLabel_1 = new JLabel();
+	JLabel lessonsAttended = new JLabel();
+
 	/**
 	 * Launch the application.
 	 */
@@ -40,9 +42,6 @@ import javax.swing.*;
 	
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public customerUI(Customer student) {
 		this.student = student;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -55,8 +54,8 @@ import javax.swing.*;
 		SelectedCourse.setBounds(18, 59, 185, 16);
 		contentPane.add(SelectedCourse);
 		
-		lblNewLabel.setBounds(18, 83, 273, 16);
-		contentPane.add(lblNewLabel);
+		message.setBounds(18, 98, 358, 16);
+		contentPane.add(message);
 		
 		Refresh.setBounds(385, 37, 117, 29);
 		contentPane.add(Refresh);
@@ -84,6 +83,9 @@ import javax.swing.*;
 		PreviousBtn.setBounds(385, 389, 117, 45);
 		contentPane.add(PreviousBtn);
 		
+		lessonsAttended.setBounds(18, 70, 197, 16);
+		contentPane.add(lessonsAttended);
+		
 		
 		Refresh.addActionListener(this);
 		PreviousBtn.addActionListener(this);
@@ -97,7 +99,7 @@ import javax.swing.*;
 		
 		if(this.student.courseID!=0) {
 			SelectedCourse.setText("Current course - "+ connection.get_data("lesson", "name", "lessonID", Integer.toString(this.student.courseID), "String", "int").stringVar);
-			lblNewLabel.setText("Lessons attended - " + this.student.lessonsAttended);
+			lessonsAttended.setText("Lessons attended - " + this.student.lessonsAttended);
 			ChoiseSelection.setVisible(false);
 			signupORcancel.setText("Cancel course");
 			signupORcancel.setVisible(true);
@@ -110,9 +112,8 @@ import javax.swing.*;
 			this.refreshLessons();
 			SelectedCourse.setText("Not assigned to a course");
 			lblNewLabel_1.setText("Available courses");
-
 		}
-		
+		message.setText(connection.get_data("students", "message", "studentid", Integer.toString(this.student.studentID), "String", "int").stringVar);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -129,19 +130,13 @@ import javax.swing.*;
 
 				this.refreshInfo();
 			}
-			//if(this.student.courseID!=0) {
 			else {
 			 //cancel the course, update the chef that student cancelled
-				//status to not-complete
-				this.student.leaveLesson();
+				this.student.leaveLesson(false);
 				this.refreshInfo();
 			}
 		 }
 	}
-	//SET @row = 0;
-
-	//SELECT @row := @row + 1 AS Row, ID
-	//FROM available_chefs;
 
 	public void refreshLessons() {
 		int i = 0;

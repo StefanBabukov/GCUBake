@@ -61,7 +61,6 @@ public class SQLconnection {
 	    	  }
 	      } 
 	      
-	      //STEP 6: Clean-up environment
 	      rs.close();
 	      stmt.close();
 	      conn.close();
@@ -75,14 +74,14 @@ public class SQLconnection {
 	         if(stmt!=null)
 	            stmt.close();
 	      }catch(SQLException se2){
-	      }// nothing we can do
+	      }
 	      try{
 	         if(conn!=null)
 	            conn.close();
 	      }catch(SQLException se){
 	         se.printStackTrace();
-	      }//end finally try
-	   }//end try
+	      }
+	   }
 	   if (var_type.equals("String")) {
 		   object.stringVar = string_table_value;
 	   }
@@ -92,23 +91,17 @@ public class SQLconnection {
 	   
 	return object;
 	   
-   }//end get_func
+   }
    
 public void set_data(String table, String[] fields, String[] values) {
 	   Connection conn = null;
 	   try{
-	      //STEP 2: Register JDBC driver
 	      Class.forName("com.mysql.jdbc.Driver");
-
-	      //STEP 3: Open a connection
 	      System.out.println("Connecting to database...");
 	      conn = DriverManager.getConnection(DB_URL,USER,PASS);
-
-	      //STEP 4: Execute a query
 	      System.out.println("Creating statement...");
 	      String query;
 	      query = "INSERT INTO " + table + " (" + Arrays.toString(fields).replace("[", "").replace("]", "") + ") " +  "VALUES " + "(" + Arrays.toString(values).replace("[", "").replace("]", "") + ")";
-	     // System.out.println(sql);
 	      System.out.println(query);
 	      PreparedStatement preparedStmt = conn.prepareStatement(query);
 	      preparedStmt.execute();
@@ -169,28 +162,21 @@ public void set_data(String table, String[] fields, String[] values) {
 
 		   try{
 		      Class.forName("com.mysql.jdbc.Driver");
-		
 		      System.out.println("Connecting to database...");
 		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
-		
 		      System.out.println("Creating statement...");
 		      stmt = conn.createStatement();
 		      String sql = null;
 		      sql = "SELECT * from available_chefs";
-		 
 		      System.out.println(sql);
 
 		      ResultSet rs = stmt.executeQuery(sql);
 		      int i = 0;
 		      while(rs.next()){
-		         //Retrieve by column name
 	    		  list[i][0] = rs.getString("name");
 	    		  list[i][1] = Integer.toString(rs.getInt("lessonID"));
 	    		  i++;
 		      } 
-		      //STEP 6: Clean-up environment
-
-		 
 		      rs.close();
 		      stmt.close();
 		      conn.close();
@@ -203,11 +189,5 @@ public void set_data(String table, String[] fields, String[] values) {
 		   return list;
 
 	}
-   //delete from users where id = 10;
-   public static void main (String[] args) {
-	   System.out.println("HI");
+
    }
-   
-   }
-//update lesson set number_lessons = 5 where name = "PIE";
-//end FirstExample

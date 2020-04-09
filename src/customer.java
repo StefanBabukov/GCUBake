@@ -10,7 +10,7 @@ class Customer
     public int courseID;
     SQLconnection connection = new SQLconnection();
     public Lesson currentCourse;
-    
+    public String message;
     public Customer(String username, int studentID){
         this.lessonsAttended = 0;
         this.username = username;
@@ -20,11 +20,6 @@ class Customer
     public Customer() {
     	
     }
-    public void bookLesson(String lessonName){
-        if(this.lessonsAttended == 0){
-            this.status = "Beginner";
-        }
-    }
     public void joinLesson(String chefName) {
 		int chefID = connection.get_data("chefs", "chefID", "username", chefName, "int", "String").integerVar;
 		int courseID = connection.get_data("chefs", "courseID", "chefID", Integer.toString(chefID), "int", "int").integerVar;
@@ -33,38 +28,37 @@ class Customer
 		connection.update_data("students", "chefID", chefID, "studentID", this.studentID, null);
 		connection.update_data("chefs", "studentID", this.studentID, "chefID", chefID, null);
 		connection.update_data("students", "status", 0, "studentID", this.studentID, "Beginner");
+		connection.modify_data("delete from available_chefs where name = '"+ chefName + "'");	
+		connection.update_data("students", "message", 0, "studentID", this.studentID, " ");
+		connection.update_data("students", "lessons_attended", 0, "studentID", this.studentID, null);
+
 		this.populateData(this.studentID);
-		connection.modify_data("delete from available_chefs where name = '"+ chefName + "'");
-		
     }
-    public void leaveLesson() {
-    //	this.courseID;
+    
+    public void leaveLesson(boolean completed) {
+    	if (completed) {
+    		connection.update_data("students", "lessons_attended", 0, "studentID", this.studentID, null);
+    	}
+    	else {
+        	connection.update_data("chefs", "message", 0, "chefID", this.chefID, "Student Cancelled the course!");
+
+    	}
 		connection.update_data("students", "courseID", 0, "studentID", this.studentID, null);
 		connection.update_data("students", "status", 0, "studentID", this.studentID, "Not-complete");
 		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
 		connection.update_data("students", "chefID", 0, "studentID", this.studentID, null);
-		connection.update_data("students", "lessons_attended", 0, "studentID", this.studentID, null);
 		this.populateData(this.studentID);
     }
-    public void completeLesson(String lessonName, boolean stop){
-        //Check if there's a booked lesson for today
-        this.lessonsAttended++;
-        if (stop){
-            this.status = "Not-complete";
-        }
-        else {
-	        if (this.lessonsAttended == this.currentCourse.numberOfLessons){
-	            this.status = "Star-Baker";
-	        }
-	        else{
-	            this.status = "On-going";
-	        }
-        }
-
+    
+    public void addToCompletedCourses() {
+    	String [] fields = new String[]{"studentID","name"};
+    	String course_name = connection.get_data("lesson", "name", "lessonID", Integer.toString(this.courseID), "String", "int").stringVar;
+    	String [] values = new String[] {"'"+this.studentID+"'", "'"+course_name+"'"};
+    	connection.set_data("completed_courses", fields, values);
     }
+    
     public void populateData(int ID) {
     	//data about the account is fetched from the database and populated into the fields of this object
-
     	String stringID;
     	this.studentID = ID;
     	stringID = Integer.toString(ID);
@@ -74,17 +68,19 @@ class Customer
     	this.courseID = connection.get_data("students", "courseID", "studentID", stringID, "int", "int").integerVar;
     	this.chefID = connection.get_data("students", "chefID", "studentID", stringID, "int", "int").integerVar;
     	this.lessonsAttended = connection.get_data("students", "lessons_attended", "studentID", stringID, "int", "int").integerVar;
-    	//Lesson studentLesson = new Lesson();
-    	//currentCourse = studentLesson.getLessonFromSQL(this.courseID);
-    	//this.
+    	this.message = connection.get_data("students", "message", "studentID", stringID, "String", "int").stringVar;
+    			
+    	if (this.status.equals("Star-Baker")) {
+    		this.addToCompletedCourses();
+    		this.leaveLesson(true);
+    	}
     }
     public void createRow(){
+    	//this method is called when a new account is created
     	SQLconnection connection = new SQLconnection();
     	String[] fields = new String[] {"username", "studentID", "lessons_attended", "status" };
     	String[] values = new String[] {"'"+this.username+"'", "'"+this.studentID+"'","'"+this.lessonsAttended+"'","'"+this.status+"'"};
     	connection.set_data("students", fields, values);
     }
-    //public void joinLesson(Lesson lesson){
-     //   this.currentCourse = lesson;
-   // }
+
 }

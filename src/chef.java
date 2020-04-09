@@ -19,39 +19,7 @@ class Chef
     public Chef() {
     	
     }
-    /*public void bookClass(Lesson lesson, String date){
-        boolean exists = false;
-        for (int i=0; i<this.classes.length; i++){
-            if (classes[i] == lesson){
-                exists = true;
-            }
-        }
-        if (exists){
-            lesson.schedule.put(date, this.name);
-            this.assignedClasses.put(date, lesson.getName());
-            System.out.println("Class booked.");
-        }
-        else{
-            System.out.println("Chef not assigned to teach this course!");
-        }
-    }
-    */
-    /*public void teachLesson(Lesson lesson){
-        int i=0;
-        while(true){
-            if(this.classes[i] == null){
-                this.classes[i] = lesson;
-                break;
-            }
-            i++;
-        }
-    }
-	*/
-    /*public Dictionary<String, Object> checkTimetable(){
-        //System.out.println(this.assignedClassses.toString());
-        return this.assignedClasses;
-    }
-    */
+
     public void signLesson(String courseName) {
 		this.courseID = connection.get_data("lesson", "lessonID", "name", courseName, "int", "String").integerVar;
 		connection.update_data("chefs", "courseID", this.courseID, "chefID", this.chefID, null);
@@ -61,12 +29,27 @@ class Chef
 		this.populateData(this.chefID);
     }
     public void cancelCourse() {
+    	connection.update_data("students", "message", 0, "studentID", this.studentID, "Your chef cancelled the course!");
 		connection.update_data("chefs", "courseID", 0, "chefID", this.chefID, null);
 		connection.update_data("students", "status", 0, "studentID", this.studentID, "Not-complete");
 		connection.update_data("students", "courseID", 0, "studentID", this.studentID, null);
 		connection.update_data("students", "chefID", 0, "studentID", this.studentID, null);
 		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
 		this.populateData(this.chefID);
+    }
+    
+    public void passStudent() {
+    	int lessons_attended = connection.get_data("students", "lessons_attended", "studentID", Integer.toString(this.studentID), "int", "int").integerVar+1;
+    	int required_lessons = connection.get_data("lesson","number_lessons","lessonID", Integer.toString(this.courseID),"int","int").integerVar;
+    	String status ="On-going";
+    	if (lessons_attended == required_lessons) {
+    		status = "Star-Baker";
+    		connection.update_data("students", "message", 0, "studentID", this.studentID, "You have completed the course!");
+    		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
+    		connection.update_data("chefs", "courseID", 0, "chefID", this.chefID, null);
+    	}
+    	connection.update_data("students", "lessons_attended", lessons_attended, "studentID", this.studentID, null);
+    	connection.update_data("students", "status", 0, "studentID", this.studentID, status);
     }
     
     public void createRow(){
@@ -83,8 +66,6 @@ class Chef
     	this.courseID = connection.get_data("chefs", "courseID", "chefID", stringID, "int", "int").integerVar;
     	this.studentID = connection.get_data("chefs", "studentID", "chefID", stringID, "int", "int").integerVar;
 
-    	//Lesson chefLesson = new Lesson();
-    	//currentCourse = chefLesson.getLessonFromSQL(this.courseID);
     }
     public static void main(String args[]){
         
