@@ -1,3 +1,5 @@
+//import java.util.ArrayList;
+
 class Customer
 {
     public String username;
@@ -6,7 +8,7 @@ class Customer
     public int studentID;
     public int chefID;
     public int courseID;
-    
+    SQLconnection connection = new SQLconnection();
     public Lesson currentCourse;
     
     public Customer(String username, int studentID){
@@ -23,7 +25,27 @@ class Customer
             this.status = "Beginner";
         }
     }
-    
+    public void joinLesson(String chefName) {
+		int chefID = connection.get_data("chefs", "chefID", "username", chefName, "int", "String").integerVar;
+		int courseID = connection.get_data("chefs", "courseID", "chefID", Integer.toString(chefID), "int", "int").integerVar;
+		
+		connection.update_data("students", "courseID", courseID, "studentID", this.studentID, null);
+		connection.update_data("students", "chefID", chefID, "studentID", this.studentID, null);
+		connection.update_data("chefs", "studentID", this.studentID, "chefID", chefID, null);
+		connection.update_data("students", "status", 0, "studentID", this.studentID, "Beginner");
+		this.populateData(this.studentID);
+		connection.modify_data("delete from available_chefs where name = '"+ chefName + "'");
+		
+    }
+    public void leaveLesson() {
+    //	this.courseID;
+		connection.update_data("students", "courseID", 0, "studentID", this.studentID, null);
+		connection.update_data("students", "status", 0, "studentID", this.studentID, "Not-complete");
+		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
+		connection.update_data("students", "chefID", 0, "studentID", this.studentID, null);
+		connection.update_data("students", "lessons_attended", 0, "studentID", this.studentID, null);
+		this.populateData(this.studentID);
+    }
     public void completeLesson(String lessonName, boolean stop){
         //Check if there's a booked lesson for today
         this.lessonsAttended++;
@@ -51,7 +73,7 @@ class Customer
     	this.status = connection.get_data("students", "status", "studentID", stringID, "String", "int").stringVar;
     	this.courseID = connection.get_data("students", "courseID", "studentID", stringID, "int", "int").integerVar;
     	this.chefID = connection.get_data("students", "chefID", "studentID", stringID, "int", "int").integerVar;
-
+    	this.lessonsAttended = connection.get_data("students", "lessons_attended", "studentID", stringID, "int", "int").integerVar;
     	//Lesson studentLesson = new Lesson();
     	//currentCourse = studentLesson.getLessonFromSQL(this.courseID);
     	//this.

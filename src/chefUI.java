@@ -28,7 +28,8 @@ import javax.swing.JList;
 	JLabel teachingLabel = new JLabel();
 	JList <String> ChoiseSelection = new JList <>(l1);
 	JButton cancelBtn = new JButton("cancel course");
-
+	JButton refresh = new JButton("Refresh");
+	JLabel SelectedCourse = new JLabel();
 	public boolean sign;
 
 	public chefUI(Chef chef) {
@@ -54,7 +55,7 @@ import javax.swing.JList;
 		ChoiseSelection.setBounds(105, 160, 253, 201);
 		contentPane.add(ChoiseSelection);
 		
-		JLabel SelectedCourse = new JLabel("Current course - " + connection.get_data("lesson", "name", "lessonID", Integer.toString(this.chef.courseID), "String", "int").stringVar);
+		SelectedCourse.setText("No current course");
 		SelectedCourse.setBounds(18, 59, 185, 16);
 		contentPane.add(SelectedCourse);
 		teachingLabel.setBounds(159, 192, 162, 16);
@@ -74,22 +75,32 @@ import javax.swing.JList;
 		
 		contentPane.add(cancelBtn);
 		
+		refresh.setBounds(370, 14, 117, 29);
+		contentPane.add(refresh);
+		
+		refresh.addActionListener(this);
+		signupORpass.addActionListener(this);
+		cancelBtn.addActionListener(this);
+		this.refreshInfo();
+
+	}
+	public void refreshInfo() {
+		this.chef.populateData(this.chef.chefID);
 		if (this.chef.courseID == 0) {
 			ChoiseSelection.setVisible(true);
 			refreshLessons();
-
 		}
 		else {
 			ChoiseSelection.setVisible(false);
 			if(this.chef.studentID != 0) {
 				teachingLabel.setText("You are teaching - " + connection.get_data("students", "username", "studentID", Integer.toString(this.chef.studentID), "String", "int").stringVar);
+				SelectedCourse.setText("Current course - " + connection.get_data("lesson", "name", "lessonID", Integer.toString(this.chef.courseID), "String", "int").stringVar);
+
 				}
 				else {
 					teachingLabel.setText("Searching for a student...");
 				}
 		}
-		signupORpass.addActionListener(this);
-
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -99,18 +110,20 @@ import javax.swing.JList;
 		//	 this.refreshLessons();
 		 //}
 		 System.out.print(e.getSource());
+		 if (e.getSource() == refresh) {
+			 this.refreshInfo();
+		 }
+		 if(e.getSource() == cancelBtn) {
+			 this.chef.cancelCourse();
+			 this.refreshInfo();
+		 }
 		 if (e.getSource() == this.signupORpass) {
 			 System.out.println("in event handler");
 			 if (this.chef.courseID == 0) {
-				String courseName = new String();
-				courseName = ChoiseSelection.getSelectedValue();
-				
-				this.chef.courseID = connection.get_data("lesson", "lessonID", "name", courseName, "int", "String").integerVar;
-				connection.update_data("chefs", "courseID", this.chef.courseID, "chefID", this.chef.chefID);
-				String[] fields = new String[] {"lessonID", "name"};
-		    	String[] values = new String[] {"'"+this.chef.courseID+"'", "'"+this.chef.username+"'"};
-				connection.set_data("available_chefs", fields, values);
+				String courseName = ChoiseSelection.getSelectedValue();
+				this.chef.signLesson(courseName);
 				ChoiseSelection.setVisible(false);
+				this.refreshInfo();
 			 }
 		 }
 	}

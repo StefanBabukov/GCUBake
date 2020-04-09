@@ -18,7 +18,8 @@ class LoginFrame extends JFrame implements ActionListener {
     JRadioButton chefRadio=new JRadioButton("Chef");    
     JRadioButton studentRadio=new JRadioButton("Student");   
     JLabel welcome=new JLabel("Please login or register");
-    
+	SQLconnection connection = new SQLconnection();
+
     LoginFrame()
     {
        //Calling methods inside constructor.
@@ -58,6 +59,7 @@ class LoginFrame extends JFrame implements ActionListener {
         ButtonGroup bg=new ButtonGroup();    
         bg.add(chefRadio);bg.add(studentRadio); 
         welcome.setBounds(50, 100, 220, 30);
+        System.out.println(connection.get_table());
    }
    public void addComponentsToContainer()
    {
@@ -96,7 +98,6 @@ class LoginFrame extends JFrame implements ActionListener {
     	if(e.getSource() == confirmBtn) {
     		String username = userTextField.getText();
         	String password = String.valueOf(passwordField.getPassword());
-        	SQLconnection connection = new SQLconnection();
         	String[] fields = new String[] {"username", "password", "role"};
         	
             String[] values = new String[] {"'"+username+"'", "'"+password+"'", "'"+role+"'"};
@@ -126,7 +127,6 @@ class LoginFrame extends JFrame implements ActionListener {
     	if(e.getSource() == loginButton) {
     		String username = userTextField.getText();
     		String password = String.valueOf(passwordField.getPassword());
-    		SQLconnection connection = new SQLconnection();
     		returnObject password_check;
         	password_check = connection.get_data("users", "password", "username", username, "String", "String");
 

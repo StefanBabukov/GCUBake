@@ -121,14 +121,19 @@ public void set_data(String table, String[] fields, String[] values) {
 	        System.err.println(e.getMessage());
 	      }	   
 }
-   public void update_data(String table, String column, int value, String id_name, int id_value) {
+   public void update_data(String table, String column, int value, String id_name, int id_value, String stringValue) {
 	   Connection conn = null;
 
 	   try{
 		      Class.forName("com.mysql.jdbc.Driver");
 		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
 		      String query;
-		      query = "update " + table + " set " + column + " = " + value + " where " + id_name + " = " + id_value ;
+		      if(stringValue == null) {
+		    	  query = "update " + table + " set " + column + " = " + value + " where " + id_name + " = " + id_value ;
+		      }
+		      else {
+		    	  query = "update " + table + " set " + column + " = '" + stringValue + "' where " + id_name + " = " + id_value ;
+		      }
 		      System.out.println(query);
 		      PreparedStatement preparedStmt = conn.prepareStatement(query);
 		      preparedStmt.execute();
@@ -157,6 +162,47 @@ public void set_data(String table, String[] fields, String[] values) {
 	        System.err.println(e.getMessage());
 	      }	
    }
+	public String[][] get_table(){
+		Connection conn = null;
+		   Statement stmt = null;
+		   String [][] list =new String[100][100];
+
+		   try{
+		      Class.forName("com.mysql.jdbc.Driver");
+		
+		      System.out.println("Connecting to database...");
+		      conn = DriverManager.getConnection(DB_URL,USER,PASS);
+		
+		      System.out.println("Creating statement...");
+		      stmt = conn.createStatement();
+		      String sql = null;
+		      sql = "SELECT * from available_chefs";
+		 
+		      System.out.println(sql);
+
+		      ResultSet rs = stmt.executeQuery(sql);
+		      int i = 0;
+		      while(rs.next()){
+		         //Retrieve by column name
+	    		  list[i][0] = rs.getString("name");
+	    		  list[i][1] = Integer.toString(rs.getInt("lessonID"));
+	    		  i++;
+		      } 
+		      //STEP 6: Clean-up environment
+
+		 
+		      rs.close();
+		      stmt.close();
+		      conn.close();
+		   }
+		   catch (Exception e)
+		      {
+		        System.err.println("Got an exception!");
+		        System.err.println(e.getMessage());
+		      }	
+		   return list;
+
+	}
    //delete from users where id = 10;
    public static void main (String[] args) {
 	   System.out.println("HI");

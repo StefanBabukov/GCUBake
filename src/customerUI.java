@@ -58,14 +58,14 @@ import javax.swing.*;
 		lblNewLabel.setBounds(18, 83, 273, 16);
 		contentPane.add(lblNewLabel);
 		
-		Refresh.setBounds(247, 129, 117, 29);
+		Refresh.setBounds(385, 37, 117, 29);
 		contentPane.add(Refresh);
 		
 		JLabel username = new JLabel("Hello "+ student.username);
 		username.setBounds(192, 19, 172, 16);
 		contentPane.add(username);
 		
-		StudentStatus.setBounds(18, 42, 140, 16);
+		StudentStatus.setBounds(18, 42, 185, 16);
 		contentPane.add(StudentStatus);
 		
 		
@@ -92,18 +92,23 @@ import javax.swing.*;
 	}
 	
 	public void refreshInfo() {
+		this.student.populateData(this.student.studentID);
 		StudentStatus.setText("Status - "+ this.student.status);
-
+		
 		if(this.student.courseID!=0) {
 			SelectedCourse.setText("Current course - "+ connection.get_data("lesson", "name", "lessonID", Integer.toString(this.student.courseID), "String", "int").stringVar);
 			lblNewLabel.setText("Lessons attended - " + this.student.lessonsAttended);
 			ChoiseSelection.setVisible(false);
 			signupORcancel.setText("Cancel course");
+			signupORcancel.setVisible(true);
+
 			lblNewLabel_1.setVisible(false);
 		}
 		else {
+			ChoiseSelection.setVisible(true);
+			signupORcancel.setText("Sign for a course");
 			this.refreshLessons();
-			lblNewLabel.setText("Not assigned to a course");
+			SelectedCourse.setText("Not assigned to a course");
 			lblNewLabel_1.setText("Available courses");
 
 		}
@@ -116,42 +121,47 @@ import javax.swing.*;
 			 this.refreshInfo();
 		 }
 		 if (e.getSource()==this.signupORcancel) {
-			 if (this.student.courseID == 0) {
+			 if (signupORcancel.getText() != "Cancel course") {
 				//getting the selected course and signing for it
 				String chefName = chefNames.get(ChoiseSelection.getSelectedIndex());
-				int chefID = connection.get_data("chefs", "chefID", "username", chefName, "int", "String").integerVar;
-				int courseID = connection.get_data("chefs", "courseID", "chefID", Integer.toString(chefID), "int", "int").integerVar;
-				
-				connection.update_data("students", "courseID", courseID, "studentID", this.student.studentID);
-				connection.update_data("students", "chefID", chefID, "studentID", this.student.studentID);
-				connection.update_data("chefs", "studentID", this.student.studentID, "chefID", chefID);
-				this.student.populateData(this.student.studentID);
-				connection.modify_data("delete from available_chefs where name = '"+ chefName + "'");
-				
-				refreshInfo();
+				this.student.joinLesson(chefName);
+				signupORcancel.setVisible(false);
+
+				this.refreshInfo();
 			}
-			if(this.student.courseID!=0) {
-				//cancel the course, update the chef that student cancelled
+			//if(this.student.courseID!=0) {
+			else {
+			 //cancel the course, update the chef that student cancelled
+				//status to not-complete
+				this.student.leaveLesson();
+				this.refreshInfo();
 			}
 		 }
 	}
+	//SET @row = 0;
+
+	//SELECT @row := @row + 1 AS Row, ID
+	//FROM available_chefs;
+
 	public void refreshLessons() {
-		int i = 1;
+		int i = 0;
 		l1.clear();
 		chefNames.clear();
+		String [][] table = new String[100][100];
+		table = connection.get_table();
 		while (true) {
 			
-			
-			String chefName = connection.get_data("available_chefs", "name", "ID", Integer.toString(i), "String", "int").stringVar;
-			int lesson_id = connection.get_data("available_chefs", "lessonID", "ID", Integer.toString(i), "int", "int").integerVar;
-			
-			int lessons = connection.get_data("lesson", "NUMBER_LESSONS", "lessonID", Integer.toString(lesson_id), "int", "int").integerVar;
-			String lessonName = connection.get_data("lesson", "NAME", "lessonID", Integer.toString(lesson_id), "String", "int").stringVar;
-			if (chefName == null) {
+			String chefName = table[i][0];
+			String lesson_id = table[i][1];
+			if(chefName==null) {
 				break;
 			}
-			 l1.addElement(lessonName + ", chef - "+ chefName + ", lessons - " + lessons);  
-			 chefNames.add(chefName);
+			int lessons = connection.get_data("lesson", "NUMBER_LESSONS", "lessonID", lesson_id, "int", "int").integerVar;
+			String lessonName = connection.get_data("lesson", "NAME", "lessonID", lesson_id, "String", "int").stringVar;
+			l1.addElement(lessonName + ", chef - "+ chefName + ", lessons - " + lessons);  
+			chefNames.add(chefName);
+			
+			
 			 i++;
 		}
 		System.out.println(chefNames);

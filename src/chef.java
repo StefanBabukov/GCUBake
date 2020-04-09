@@ -1,4 +1,4 @@
-import java.util.*; 
+//import java.util.*; 
 
 class Chef
 {
@@ -10,6 +10,8 @@ class Chef
     public Lesson currentCourse;
     public int courseID;
     public int studentID;
+	SQLconnection connection = new SQLconnection();
+
     public Chef(String name, int chefID){
         this.username = name;
         this.chefID = chefID;
@@ -50,8 +52,24 @@ class Chef
         return this.assignedClasses;
     }
     */
+    public void signLesson(String courseName) {
+		this.courseID = connection.get_data("lesson", "lessonID", "name", courseName, "int", "String").integerVar;
+		connection.update_data("chefs", "courseID", this.courseID, "chefID", this.chefID, null);
+		String[] fields = new String[] {"lessonID", "name"};
+    	String[] values = new String[] {"'"+this.courseID+"'", "'"+this.username+"'"};
+		connection.set_data("available_chefs", fields, values);
+		this.populateData(this.chefID);
+    }
+    public void cancelCourse() {
+		connection.update_data("chefs", "courseID", 0, "chefID", this.chefID, null);
+		connection.update_data("students", "status", 0, "studentID", this.studentID, "Not-complete");
+		connection.update_data("students", "courseID", 0, "studentID", this.studentID, null);
+		connection.update_data("students", "chefID", 0, "studentID", this.studentID, null);
+		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
+		this.populateData(this.chefID);
+    }
+    
     public void createRow(){
-    	SQLconnection connection = new SQLconnection();
     	String[] fields = new String[] {"username", "chefID"};
     	String[] values = new String[] {"'"+this.username+"'", "'"+this.chefID+"'"};
     	connection.set_data("chefs", fields, values);
@@ -61,7 +79,6 @@ class Chef
     	String stringID;
     	this.chefID = ID;
     	stringID = Integer.toString(ID);
-    	SQLconnection connection = new SQLconnection();
     	this.username = connection.get_data("chefs", "username", "chefID", stringID, "String", "int").stringVar;
     	this.courseID = connection.get_data("chefs", "courseID", "chefID", stringID, "int", "int").integerVar;
     	this.studentID = connection.get_data("chefs", "studentID", "chefID", stringID, "int", "int").integerVar;
@@ -70,23 +87,7 @@ class Chef
     	//currentCourse = chefLesson.getLessonFromSQL(this.courseID);
     }
     public static void main(String args[]){
-        /*System.out.println("hello");
-        Lesson cakeLesson = new Lesson("Cakes");
-        Lesson muffinLesson = new Lesson("Muffins");
-        Chef bob = new Chef("Bob");
-        Chef john = new Chef("John");
         
-
-        bob.teachLesson(cakeLesson);
-        bob.bookClass(cakeLesson, "11.06");
-        bob.teachLesson(muffinLesson);
-        bob.bookClass(muffinLesson, "13.06");
-       // john.bookClass(cakeLesson,"12.06");
-        
-        //cakeLesson.getSchedule();
-        bob.checkTimetable();
-        System.out.println(bob.assignedClasses.toString());
-        */
     }
     
 }
