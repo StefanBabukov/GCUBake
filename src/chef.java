@@ -4,10 +4,8 @@ class Chef
 {
     // instance variables - replace the example below with your own
     public String username;
-
     public Customer student;
     public int chefID; 
-    public Lesson currentCourse;
     public int courseID;
     public int studentID;
 	SQLconnection connection = new SQLconnection();
@@ -23,6 +21,8 @@ class Chef
     public void signLesson(String courseName) {
 		this.courseID = connection.get_data("lesson", "lessonID", "name", courseName, "int", "String").integerVar;
 		connection.update_data("chefs", "courseID", this.courseID, "chefID", this.chefID, null);
+		connection.update_data("chefs", "message", 0, "chefID", this.chefID, " ");
+
 		String[] fields = new String[] {"lessonID", "name"};
     	String[] values = new String[] {"'"+this.courseID+"'", "'"+this.username+"'"};
 		connection.set_data("available_chefs", fields, values);
@@ -39,16 +39,20 @@ class Chef
     }
     
     public void passStudent() {
-    	int lessons_attended = connection.get_data("students", "lessons_attended", "studentID", Integer.toString(this.studentID), "int", "int").integerVar+1;
-    	int required_lessons = connection.get_data("lesson","number_lessons","lessonID", Integer.toString(this.courseID),"int","int").integerVar;
+    	int lessonsAttended = connection.get_data("students", "lessons_attended", "studentID", Integer.toString(this.studentID), "int", "int").integerVar+1;
+    	int requiredLessons = connection.get_data("lesson","number_lessons","lessonID", Integer.toString(this.courseID),"int","int").integerVar;
     	String status ="On-going";
-    	if (lessons_attended == required_lessons) {
+    	String courseName = connection.get_data("lesson", "name", "lessonID", Integer.toString(this.courseID), "String", "int").stringVar;
+    	connection.update_data("students", "lessons_attended", lessonsAttended, "studentID", this.studentID, null);
+    	System.out.println("lessons attended -" + lessonsAttended + "Lessons required - " + requiredLessons);
+    	if (lessonsAttended == requiredLessons) {
     		status = "Star-Baker";
-    		connection.update_data("students", "message", 0, "studentID", this.studentID, "You have completed the course!");
+    		connection.update_data("chefs", "message", 0, "chefID", this.chefID, "Course finished, sign up for a new one!");
+
+    		connection.update_data("students", "message", 0, "studentID", this.studentID, "You have completed the course " + courseName + "!");
     		connection.update_data("chefs", "studentID", 0, "chefID", this.chefID, null);
     		connection.update_data("chefs", "courseID", 0, "chefID", this.chefID, null);
     	}
-    	connection.update_data("students", "lessons_attended", lessons_attended, "studentID", this.studentID, null);
     	connection.update_data("students", "status", 0, "studentID", this.studentID, status);
     }
     

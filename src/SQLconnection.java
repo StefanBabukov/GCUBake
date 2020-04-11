@@ -155,7 +155,7 @@ public void set_data(String table, String[] fields, String[] values) {
 	        System.err.println(e.getMessage());
 	      }	
    }
-	public String[][] get_table(){
+	public String[][] get_table(String table){
 		Connection conn = null;
 		   Statement stmt = null;
 		   String [][] list =new String[100][100];
@@ -167,15 +167,22 @@ public void set_data(String table, String[] fields, String[] values) {
 		      System.out.println("Creating statement...");
 		      stmt = conn.createStatement();
 		      String sql = null;
-		      sql = "SELECT * from available_chefs";
+		      sql = "SELECT * from "+ table;
 		      System.out.println(sql);
 
 		      ResultSet rs = stmt.executeQuery(sql);
 		      int i = 0;
 		      while(rs.next()){
-	    		  list[i][0] = rs.getString("name");
-	    		  list[i][1] = Integer.toString(rs.getInt("lessonID"));
-	    		  i++;
+		    	  if (table.equals("available_chefs")) {
+		    		  list[i][0] = rs.getString("name");
+		    		  list[i][1] = Integer.toString(rs.getInt("lessonID"));
+		    		  
+		    	  }
+		    	  else {
+		    		 list[i][0] = rs.getString("name");
+		    	  }
+		    	  System.out.println(list[i][0]);
+		    	  i++;
 		      } 
 		      rs.close();
 		      stmt.close();

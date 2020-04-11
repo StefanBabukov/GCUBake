@@ -56,13 +56,13 @@ import java.awt.Color;
 		contentPane.add(teachBtn);
 		
 		ChoiseSelection.setEnabled(true);
-		ChoiseSelection.setBounds(105, 160, 253, 201);
+		ChoiseSelection.setBounds(100, 177, 253, 201);
 		contentPane.add(ChoiseSelection);
 		
 		SelectedCourse.setText("No current course");
 		SelectedCourse.setBounds(18, 59, 185, 16);
 		contentPane.add(SelectedCourse);
-		teachingLabel.setBounds(159, 192, 162, 16);
+		teachingLabel.setBounds(97, 149, 261, 16);
 		contentPane.add(teachingLabel);
 
 		Pass.setBounds(145, 257, 75, 29);
@@ -88,18 +88,23 @@ import java.awt.Color;
 		this.chef.populateData(this.chef.chefID);
 		if (this.chef.courseID == 0) {
 			ChoiseSelection.setVisible(true);
+			teachBtn.setVisible(true);
 			refreshLessons();
+			teachingLabel.setText("Choose a course to teach:");
 		}
 		else {
 			ChoiseSelection.setVisible(false);
+			teachBtn.setVisible(false);
+			SelectedCourse.setText("Current course - " + connection.get_data("lesson", "name", "lessonID", Integer.toString(this.chef.courseID), "String", "int").stringVar);
+			
 			if(this.chef.studentID != 0) {
 				teachingLabel.setText("You are teaching - " + connection.get_data("students", "username", "studentID", Integer.toString(this.chef.studentID), "String", "int").stringVar);
-				SelectedCourse.setText("Current course - " + connection.get_data("lesson", "name", "lessonID", Integer.toString(this.chef.courseID), "String", "int").stringVar);
-				teachBtn.setVisible(false);
+				Pass.setVisible(true);
 				}
-				else {
-					teachingLabel.setText("Searching for a student...");
-				}
+			else {
+				teachingLabel.setText("Searching for a student...");
+				Pass.setVisible(false);
+			}
 		}
 		message.setText(connection.get_data("chefs", "message", "chefid", Integer.toString(this.chef.chefID), "String", "int").stringVar);
 	}
@@ -139,5 +144,4 @@ import java.awt.Color;
 			 i++;
 		}
 	}
-
 }

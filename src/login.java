@@ -62,7 +62,6 @@ class LoginFrame extends JFrame implements ActionListener {
         ButtonGroup bg=new ButtonGroup();    
         bg.add(chefRadio);bg.add(studentRadio); 
         welcome.setBounds(50, 70, 220, 30);
-        System.out.println(connection.get_table());
         showPassword.addActionListener(this);
    }
    public void addComponentsToContainer()

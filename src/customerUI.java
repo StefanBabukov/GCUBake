@@ -2,6 +2,7 @@
 import java.util.*; 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -34,7 +35,8 @@ import javax.swing.*;
 	JLabel StudentStatus = new JLabel();
 	JLabel lblNewLabel_1 = new JLabel();
 	JLabel lessonsAttended = new JLabel();
-
+	JButton previousBtn = new JButton("Previous courses");
+	
 	/**
 	 * Launch the application.
 	 */
@@ -54,9 +56,10 @@ import javax.swing.*;
 		SelectedCourse.setBounds(18, 59, 185, 16);
 		contentPane.add(SelectedCourse);
 		
-		message.setBounds(18, 98, 358, 16);
+		message.setBounds(18, 88, 358, 16);
 		contentPane.add(message);
-		
+		message.setForeground(Color.RED);
+
 		Refresh.setBounds(385, 37, 117, 29);
 		contentPane.add(Refresh);
 		
@@ -64,7 +67,7 @@ import javax.swing.*;
 		username.setBounds(192, 19, 172, 16);
 		contentPane.add(username);
 		
-		StudentStatus.setBounds(18, 42, 185, 16);
+		StudentStatus.setBounds(18, 37, 185, 16);
 		contentPane.add(StudentStatus);
 		
 		
@@ -72,23 +75,22 @@ import javax.swing.*;
 		contentPane.add(signupORcancel);
 
 		ChoiseSelection.setEnabled(true);
-		ChoiseSelection.setBounds(141, 162, 253, 201);
+		ChoiseSelection.setBounds(58, 134, 336, 243);
 		contentPane.add(ChoiseSelection);
 		
-		lblNewLabel_1.setBounds(119, 134, 162, 16);
+		lblNewLabel_1.setBounds(129, 116, 162, 16);
 		contentPane.add(lblNewLabel_1);
 		
 
-		JButton PreviousBtn = new JButton("Previous courses");
-		PreviousBtn.setBounds(385, 389, 117, 45);
-		contentPane.add(PreviousBtn);
+		previousBtn.setBounds(385, 389, 117, 45);
+		contentPane.add(previousBtn);
 		
 		lessonsAttended.setBounds(18, 70, 197, 16);
 		contentPane.add(lessonsAttended);
 		
 		
 		Refresh.addActionListener(this);
-		PreviousBtn.addActionListener(this);
+		previousBtn.addActionListener(this);
 		signupORcancel.addActionListener(this);
 		refreshInfo();
 	}
@@ -96,28 +98,45 @@ import javax.swing.*;
 	public void refreshInfo() {
 		this.student.populateData(this.student.studentID);
 		StudentStatus.setText("Status - "+ this.student.status);
-		
-		if(this.student.courseID!=0) {
+		if(this.student.status.equals("Star-Baker")) {
+			lessonsAttended.setText("Lessons attended - " + this.student.lessonsAttended);
+		}
+		if(this.student.courseID!=0 ) {
 			SelectedCourse.setText("Current course - "+ connection.get_data("lesson", "name", "lessonID", Integer.toString(this.student.courseID), "String", "int").stringVar);
 			lessonsAttended.setText("Lessons attended - " + this.student.lessonsAttended);
 			ChoiseSelection.setVisible(false);
 			signupORcancel.setText("Cancel course");
 			signupORcancel.setVisible(true);
-
 			lblNewLabel_1.setVisible(false);
+			previousBtn.setVisible(false);
 		}
+		
 		else {
+			lblNewLabel_1.setVisible(true);
+			previousBtn.setVisible(true);
 			ChoiseSelection.setVisible(true);
 			signupORcancel.setText("Sign for a course");
-			this.refreshLessons();
+			if(previousBtn.getText() == "Available chefs") {
+				this.refreshPreviousCourses();
+			}
+			if(previousBtn.getText() == "Previous courses") {
+				this.refreshLessons();
+			}
 			SelectedCourse.setText("Not assigned to a course");
-			lblNewLabel_1.setText("Available courses");
 		}
 		message.setText(connection.get_data("students", "message", "studentid", Integer.toString(this.student.studentID), "String", "int").stringVar);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+		//populating the completed courses section
+		 if (e.getSource() == previousBtn) {
+			 if (previousBtn.getText() == "Previous courses") {
+				 this.refreshPreviousCourses();
+			 }
+			 else {
+				 this.refreshLessons();
+			 }
+		 }
 		 if (e.getSource() == this.Refresh) {
 			 this.refreshInfo();
 		 }
@@ -127,23 +146,38 @@ import javax.swing.*;
 				String chefName = chefNames.get(ChoiseSelection.getSelectedIndex());
 				this.student.joinLesson(chefName);
 				signupORcancel.setVisible(false);
-
-				this.refreshInfo();
 			}
 			else {
 			 //cancel the course, update the chef that student cancelled
-				this.student.leaveLesson(false);
-				this.refreshInfo();
+				this.student.leaveLesson();
 			}
+			this.refreshInfo();
+
 		 }
 	}
+	public void refreshPreviousCourses() {
+		l1.clear();
+		int i = 0;
+		String [][] table = new String [100][100];
+		table = connection.get_table("completed_courses where studentID = "+this.student.studentID);
+		while(true) {
+			String lessonName = table[i][0];
+			if(lessonName == null) {
+				break;
+			}
+			l1.addElement(lessonName + " Status: Star-Baker");
+			i++;
+		}
+		lblNewLabel_1.setText("Completed Lessons:");
 
+		previousBtn.setText("Available chefs:");
+	}
 	public void refreshLessons() {
 		int i = 0;
 		l1.clear();
 		chefNames.clear();
 		String [][] table = new String[100][100];
-		table = connection.get_table();
+		table = connection.get_table("available_chefs");
 		while (true) {
 			
 			String chefName = table[i][0];
@@ -155,11 +189,12 @@ import javax.swing.*;
 			String lessonName = connection.get_data("lesson", "NAME", "lessonID", lesson_id, "String", "int").stringVar;
 			l1.addElement(lessonName + ", chef - "+ chefName + ", lessons - " + lessons);  
 			chefNames.add(chefName);
-			
-			
 			 i++;
 		}
 		System.out.println(chefNames);
+		previousBtn.setText("Previous courses");
+		lblNewLabel_1.setText("Available courses");
+
 	}
 	}
 

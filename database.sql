@@ -12,6 +12,7 @@ CREATE TABLE students (
 	status VARCHAR(30) NOT NULL,
 	chefID INT,
 	lessons_attended INT NOT NULL,
+        message varchar(50),
         PRIMARY KEY (studentID)
     );
 CREATE TABLE completed_courses (
@@ -28,6 +29,7 @@ CREATE TABLE chefs (
         username VARCHAR(30) NOT NULL,
 	studentID INT,
 	current_course VARCHAR(30) NOT NULL,
+        message VARCHAR(50),
         PRIMARY KEY (chefID)
     );
 CREATE TABLE available_chefs(
