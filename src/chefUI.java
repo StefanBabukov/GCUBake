@@ -1,27 +1,23 @@
 
 
 //import java.awt.BorderLayout;
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTabbedPane;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import java.awt.GridLayout;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JInternalFrame;
-import javax.swing.JTable;
 import javax.swing.JList;
 import java.awt.Color;
 
  public class chefUI extends JFrame implements ActionListener{
-	 public Chef chef;
+
+	private static final long serialVersionUID = 1L;
+	public Chef chef;
 	private JPanel contentPane;
     DefaultListModel<String> l1 = new DefaultListModel<>();  
 	JButton teachBtn = new JButton("Teach course");

@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class LoginFrame extends JFrame implements ActionListener {
- 
-   	JPanel container = new JPanel();
+	private static final long serialVersionUID = 1L;
+	JPanel container = new JPanel();
     JLabel userLabel=new JLabel("USERNAME");
     JLabel passwordLabel=new JLabel("PASSWORD");
     JTextField userTextField=new JTextField();
@@ -118,6 +118,8 @@ class LoginFrame extends JFrame implements ActionListener {
         	welcome.setVisible(true);
         	welcome.setForeground(Color.BLACK);
         	welcome.setText("Please login or register");
+        	userTextField.setText("");
+        	passwordField.setText("");
     	}
     	if(e.getSource() == confirmBtn) {
     		String username = userTextField.getText();

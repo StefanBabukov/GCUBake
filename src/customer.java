@@ -9,7 +9,6 @@ class Customer
     public int chefID;
     public int courseID;
     SQLconnection connection = new SQLconnection();
-    public Lesson currentCourse;
     public String message;
     public Customer(String username, int studentID){
         this.lessonsAttended = 0;

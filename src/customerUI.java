@@ -21,7 +21,9 @@ import javax.swing.JList;
 import javax.swing.*;  
 
  public class customerUI extends JFrame implements ActionListener {
-	 Customer student;
+
+	private static final long serialVersionUID = 1L;
+	Customer student;
 	 boolean sign = true;
      DefaultListModel<String> l1 = new DefaultListModel<>();  
 	JButton Refresh = new JButton("Refresh");

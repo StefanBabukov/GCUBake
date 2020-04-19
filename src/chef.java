@@ -4,7 +4,6 @@ class Chef
 {
     // instance variables - replace the example below with your own
     public String username;
-    public Customer student;
     public int chefID; 
     public int courseID;
     public int studentID;
